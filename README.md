@@ -4,6 +4,18 @@ Cassandra state implementation for Twitter Storm Trident API.
 
 All 3 state types are working good (non-transactional, opaque-transactional and transactional).
 
+# Maven
+
+https://clojars.org/trident-cassandra
+
+```xml
+<dependency>
+  <groupId>trident-cassandra</groupId>
+  <artifactId>trident-cassandra</artifactId>
+  <version>0.0.1-wip1</version>
+</dependency>
+```
+
 ## Usage
 
 Use static factory methods in `trident.cassandra.CassandraState`.
