@@ -6,18 +6,6 @@ import backtype.storm.LocalDRPC;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
-import me.prettyprint.cassandra.model.ConfigurableConsistencyLevel;
-import me.prettyprint.cassandra.serializers.BytesArraySerializer;
-import me.prettyprint.cassandra.serializers.CompositeSerializer;
-import me.prettyprint.cassandra.serializers.StringSerializer;
-import me.prettyprint.cassandra.service.CassandraHostConfigurator;
-import me.prettyprint.cassandra.service.spring.HectorTemplate;
-import me.prettyprint.cassandra.service.spring.HectorTemplateImpl;
-import me.prettyprint.hector.api.beans.Composite;
-import me.prettyprint.hector.api.beans.HColumn;
-import me.prettyprint.hector.api.factory.HFactory;
-import me.prettyprint.hector.api.query.SliceQuery;
-import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
 import storm.trident.TridentState;
 import storm.trident.TridentTopology;
 import storm.trident.operation.builtin.Count;
@@ -27,8 +15,6 @@ import storm.trident.operation.builtin.Sum;
 import storm.trident.state.StateFactory;
 import storm.trident.testing.FixedBatchSpout;
 import storm.trident.testing.Split;
-
-import java.util.List;
 
 /**
  * @author slukjanov
