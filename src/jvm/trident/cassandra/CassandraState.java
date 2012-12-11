@@ -3,6 +3,7 @@ package trident.cassandra;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +36,7 @@ import storm.trident.state.map.NonTransactionalMap;
 import storm.trident.state.map.OpaqueMap;
 import storm.trident.state.map.SnapshottableMap;
 import storm.trident.state.map.TransactionalMap;
+import backtype.storm.task.IMetricsContext;
 import backtype.storm.tuple.Values;
 
 import com.google.common.base.Function;
@@ -123,26 +125,28 @@ public class CassandraState<T> implements IBackingMap<T> {
             }
         }
 
-        @SuppressWarnings("unchecked")
         @Override
-        public State makeState(Map conf, int partitionIndex, int numPartitions) {
-            CassandraState state = new CassandraState(hosts, options, serializer);
+        public State makeState(Map conf, IMetricsContext metrics, int partitionIndex, int numPartitions) {
+            IBackingMap state = new CassandraState(hosts, options, serializer);
 
-            CachedMap cachedMap = new CachedMap(state, options.localCacheSize);
+            if (options.localCacheSize > 0) {
+                state = new CachedMap(state, options.localCacheSize);
+            }
 
             MapState mapState;
             if (stateType == StateType.NON_TRANSACTIONAL) {
-                mapState = NonTransactionalMap.build(cachedMap);
+                mapState = NonTransactionalMap.build(state);
             } else if (stateType == StateType.OPAQUE) {
-                mapState = OpaqueMap.build(cachedMap);
+                mapState = OpaqueMap.build(state);
             } else if (stateType == StateType.TRANSACTIONAL) {
-                mapState = TransactionalMap.build(cachedMap);
+                mapState = TransactionalMap.build(state);
             } else {
                 throw new RuntimeException("Unknown state type: " + stateType);
             }
 
             return new SnapshottableMap(mapState, new Values(options.globalKey));
         }
+
     }
 
     private HectorTemplate hectorTemplate;
@@ -162,6 +166,10 @@ public class CassandraState<T> implements IBackingMap<T> {
 
     @Override
     public List<T> multiGet(List<List<Object>> keys) {
+        
+        if (keys.isEmpty()) return Collections.emptyList();
+//        System.out.println("++++  Getting: " + keys);
+        
         Collection<Composite> columnNames = toColumnNames(keys);
         Collection<String> rowKeys = toRowKeys(keys);
 
@@ -244,6 +252,8 @@ public class CassandraState<T> implements IBackingMap<T> {
 
     @Override
     public void multiPut(List<List<Object>> keys, List<T> values) {
+//        System.out.println("++++  Putting: " + keys);
+
         Mutator<String> mutator = hectorTemplate.createMutator(StringSerializer.get());
 
         for (int i = 0; i < keys.size(); i++) {
