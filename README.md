@@ -12,7 +12,8 @@ https://clojars.org/trident-cassandra
 <dependency>
   <groupId>trident-cassandra</groupId>
   <artifactId>trident-cassandra</artifactId>
-  <version>0.0.1-wip1</version>
+  <!-- for storm 0.8.1 use wip1 version -->
+  <version>0.0.1-wip2</version>
 </dependency>
 ```
 
